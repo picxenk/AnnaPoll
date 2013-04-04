@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1 user-scalable=no">
+    <link rel="stylesheet" href="/css/main.css" />
+    <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/lib/anna_data.js"></script>
+    <title> ANNA </title>
+</head>
+<body>
+<!-- <canvas id="sketch" data-processing-sources="/lib/AnnaPollClient.java"></canvas> -->
+<div id="main">
+
+    <!-- ######## SLIDE ######## -->
+    <div id="titleSlide" class="slide">
+        <span id="title">
+            톨스토이가</br>
+            묻습니다.</br>
+        </span>
+    </div>
+
+    <!-- ######## SLIDE ######## -->
+    <div id="infoSlide" class="slide">
+        <div id="question">
+            <h2>개인 정보 입력</h2>
+        </div>
+        <div id="inputs"> 
+            <br/>
+            <br/>
+            성별
+            <input type="radio" name="gender" value="m"> 남자
+            <input type="radio" name="gender" value="f"> 여자
+
+            <br/>
+            <br/>
+            연령대
+            <input type="radio" name="age" value="10"> 10 대
+            <input type="radio" name="age" value="20"> 20 대
+            <input type="radio" name="age" value="30"> 30 대
+            <input type="radio" name="age" value="40"> 40 대
+            <input type="radio" name="age" value="50"> 50 대
+            <input type="radio" name="age" value="60"> 60 대
+
+            <br/>
+            <br/>
+            결혼 유/무
+            <input type="radio" name="marriage" value="true"> 기혼
+            <input type="radio" name="marriage" value="false"> 미혼 
+        </div>
+    </div>
+
+    <!-- ######## SLIDE ######## -->
+    <div id="selectionSlide" class="slide">
+        <div id="question">
+            한 가지 상황을 선택해주세요.
+        </div>
+        <div id="subjectInputs">
+        </div>
+    </div>
+
+    <!-- ######## SLIDE ######## -->
+    <div id="questionSlide" class="slide">
+        <div id="question">
+            책 속으로 들어가 Page <span id="pageNumber">0 </span>을 찾아가세요.
+            <p>
+            Page. <span id="pageNumber">0</span><br/>
+            당신은 어떤 선택을 하시겠습니까?
+            </p>
+        </div>
+        <div id="inputs">
+            <br/><input type="radio" name="choice" value="1"><span id="questionChoice1">1</span>
+            <br/><input type="radio" name="choice" value="2"><span id="questionChoice2">2</span>
+        </div>
+    </div>
+
+    <!-- ######## SLIDE ######## -->
+    <div id="resultSlide" class="slide">
+        <span id="title">
+            결과보기
+        </span>
+        <p>
+        Page. <span id="pageNumber">0</span>질문에 대답한 사람은 <span id="total">0</span>명입니다.<br/>
+        당신과 같은 선택을 한 사람이 <span id="sameChoice">0</span>명이군요.<br/>
+        <br/>
+        그 중에 남자가 <span id="sameChoiceMale">0</span>명, 여자가 <span id="sameChoiceFemale">0</span>명입니다.
+        <br/>
+        당신과 같은 대답을 한 사람 중에는
+        <span id="sameChoiceAge">0</span>대가 가장 많습니다.
+        </p>
+        <!-- <li>남:<span id="infoResultMale"></span> -->
+        <!-- <li>여:<span id="infoResultFemale"></span> -->
+        <!-- <br/> -->
+        <!-- <span id="infoResult"></span> -->
+    </div>
+
+    <!-- ######## SLIDE ######## -->
+    <div id="endSlide" class="slide">
+        <span id="title">
+            끝
+        </span>
+    </div>
+
+    <!-- ######## Buttons ######## -->
+    <button id="nextButton" onclick="nextSlide()">TEST</button>
+    <button id="exitButton" onclick="goTitle()">X</button>
+</div>
+<span id="message"> </span>
+
+<script>
+var socket = null;
+var voting_interval = 2000;
+var slideType = 1;
+var radio;
+var data = {radio:0};
+
+var message = $('#message');
+
+var TITLE_SLIDE = 1;
+var INFO_SLIDE = 2;
+var SELECT_SLIDE = 3;
+var QUEST_SLIDE = 4;
+var RESULT_SLIDE = 5;
+var END_SLIDE = 6;
+
+var pageNumber = 8;
+var infoData = {male:null, female:null, ages:null, marriage:null};
+var infoResult = {male:0, female:0, ages:{}, marriage:{}};
+var choiceResult = {total:null, result:null};
+
+// function update_result() {
+//     radio = $('input:radio[name=radio-choice]:checked').val();
+//     data.radio = radio;
+//     // message.html(radio);
+// }
+
+var currentSubject = null;
+var currentPageIndex = null;
+
+function generateSubjectRadio(subjects) {
+    var html = '';
+    for (var i=1; i<=subjects.length; i++) {
+        html = html + '<br/><input type="radio" name="subject" value="'+i+'"> ' +subjects[i-1].text; 
+    }
+    $('#subjectInputs').html(html);
+}
+
+function refreshSlide() {
+    $('.slide').hide();
+    if (slideType == TITLE_SLIDE) {
+        $('#titleSlide').show();
+        $('#nextButton').html('다음<br/>단계');
+    }
+    if (slideType == INFO_SLIDE) $('#infoSlide').show();
+    if (slideType == SELECT_SLIDE) $('#selectionSlide').show();
+    if (slideType == QUEST_SLIDE) $('#questionSlide').show();
+    if (slideType == RESULT_SLIDE) $('#resultSlide').show();
+    if (slideType == END_SLIDE) $('#endSlide').show();
+}
+
+function nextSlide() {
+    postProcessForCurrentSlide(slideType);
+
+    switch(slideType) {
+        case TITLE_SLIDE:
+            slideType = INFO_SLIDE;
+            break
+        case RESULT_SLIDE:
+            var pageLength = ANNA_QUESTIONS[currentSubject-1].pages.length;
+            if (currentPageIndex < pageLength-1) {
+                slideType = QUEST_SLIDE;
+                currentPageIndex++;
+            } else {
+                currentPageIndex = null;
+                slideType = END_SLIDE;
+            }
+            break;
+        case END_SLIDE:
+            socket.emit('save_anna_result');
+            slideType = TITLE_SLIDE;
+            break;
+        default:
+            slideType = slideType + 1;
+    }
+
+    preProcessForCurrentSlide(slideType);
+
+    refreshSlide();
+}
+
+function postProcessForCurrentSlide(aSlideType) {
+    if (aSlideType == INFO_SLIDE) { 
+        infoData = {
+            gender : $('input:radio[name=gender]:checked').val(),
+            age : $('input:radio[name=age]:checked').val(),
+            marriage : $('input:radio[name=marriage]:checked').val(),
+        };
+        socket.emit('add_info', infoData);
+        socket.emit('show_info_result');
+    }
+
+    if (aSlideType == SELECT_SLIDE) {
+        currentSubject = $('input:radio[name=subject]:checked').val();
+        console.log(currentSubject);
+        log(ANNA_QUESTIONS[currentSubject-1].text + ' 를 선택하셨습니다.');
+    }
+
+    if (aSlideType == QUEST_SLIDE) {
+        var choiceData = {
+            page : pageNumber,
+            choice : $('input:radio[name=choice]:checked').val(),
+            gender : infoData.gender,
+            age : infoData.age,
+            marriage : infoData.marriage,
+        };
+        socket.emit('add_choice', choiceData);
+        // socket.emit('show_choice_result', {page: pageNumber, myChoice: choiceData.choice});
+
+        // $("#infoResultMale").html(infoResult.male);
+        // $("#infoResultFemale").html(infoResult.female);
+        // $("#infoResult").html(JSON.stringify(infoResult));
+    }
+}
+
+function preProcessForCurrentSlide(aSlideType) {
+    if (aSlideType == QUEST_SLIDE) {
+
+        if (currentSubject == null) return;
+        if (currentSubject && currentPageIndex == null) currentPageIndex = 0;
+
+        var questionChoice1 = ANNA_QUESTIONS[currentSubject-1].pages[currentPageIndex].choices[0];
+        var questionChoice2 = ANNA_QUESTIONS[currentSubject-1].pages[currentPageIndex].choices[1];
+        pageNumber = ANNA_QUESTIONS[currentSubject-1].pages[currentPageIndex].page;
+        
+        $('span#pageNumber').html(pageNumber);
+        $('span#questionChoice1').html(questionChoice1);
+        $('span#questionChoice2').html(questionChoice2);
+    }
+
+}
+
+function goTitle() {
+    slideType = 1;
+    refreshSlide();
+}
+
+function log(msg) {
+    console.log(msg);
+    message.html(msg);
+}
+
+$(document).ready(function() {
+
+    refreshSlide();
+    generateSubjectRadio(ANNA_QUESTIONS);
+
+    socket = io.connect("ws://"+window.location.host);
+    log('hi all');
+    socket.on('connect', function() {
+        // message.html(window.location.host+'에 연결되었습니다.');
+        log(window.location.host+'에 연결되었습니다.');
+    });
+    socket.on('disconnect', function() {
+        // message.html('서버로의 연결이 끊어졌습니다. 다시 접속해보세요.');
+        log('서버로의 연결이 끊어졌습니다. 다시 접속해보세요.');
+    });
+    socket.on('info_result', function(result) {
+        infoResult = result;
+    });
+    socket.on('choice_result', function(result) {
+        choiceResult = result;
+        $('span#pageNumber').html(pageNumber);
+        $('span#total').html(choiceResult.total);
+        $('span#sameChoice').html(choiceResult.result.length);
+
+        var maleNumber = 0;
+        var femaleNumber = 0;
+
+        for (var i=0; i<choiceResult.result.length; i++) {
+            if (choiceResult.result[i].gender == 'm') { maleNumber++; }
+        }
+        femaleNumber = choiceResult.result.length - maleNumber;
+        $('span#sameChoiceMale').html(maleNumber);
+        $('span#sameChoiceFemale').html(femaleNumber);
+        $('span#sameChoiceAge').html(0);
+    });
+
+    // nextButton.html('next');
+
+    // $('input').change(function() {
+    //     update_result();
+    //     socket.emit('vote', data);
+    // });
+
+});
+</script>
+</body>
+</html>
