@@ -32,11 +32,22 @@ var poll_result = {
 var pageChoices = {
 };
 
+var resultFileName = 'anna_result.txt';
 
-fs.readFile('anna_result.txt', function (err, data) {
-    if (err) throw err;
-    pageChoices = JSON.parse(data);
+
+fs.exists(resultFileName, function(exists) {
+    if (!exists) {
+        fs.writeFile(resultFileName, '{}', function (err) {
+            if (err) throw err;
+            console.log(resultFileName + ' is created');
+        });
+    }
+    fs.readFile(resultFileName, function (err, data) {
+        if (err) throw err;
+        pageChoices = JSON.parse(data);
+    });
 });
+
 
 /** INIT SERVICES **/
 var file = new(static.Server)(public_html_path);
@@ -74,24 +85,6 @@ ngv_voting = function(con) {
         ngv_client_logger(con, vote);
         clients[con.id] = vote;
     });
-
-    // con.on('update', function() {
-    //     var conn_clients = io.sockets.clients();
-    //     result.count = conn_clients.length - 1;
-    //     result.poll = [0, 0, 0, 0, 0];
-    //     for (var i=0; i<conn_clients.length; i++) {
-    //         var id = conn_clients[i].id;
-    //         if (clients[id]) {
-    //             result.poll[clients[id].radio-1] += 1;
-    //         }
-    //     }
-    //     con.emit('show_result', result);
-    // });
-
-    // con.on('request_vote_result', function() {
-    //     con.emit('vote_result', vote_result);
-    // });
-
 
     con.on('add_info', function(data) {
         if (data.gender == 'm') poll_result.male = poll_result.male + 1;
