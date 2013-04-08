@@ -35,17 +35,17 @@ var ANNA_QUESTIONS = [
         ]
     },
     {
-        text : '관계에 대해 톨스토이가 묻습니다 2',
+        text : '관계에 대해 톨스토이가 묻습니다.',
         pages : [
             {page: 21, choices: ["있다.", "없다."]},
             {page: 22, choices: ["있다.", "없다."]},
-            {page: 23, choices: ["있다.", "없다."]},
+            {page: 23, choices: ["그렇다.", "아니다."]},
             {page: 24, choices: ["그렇다.", "아니다."]},
             {page: 25, choices: ["그렇다.", "아니다."]},
         ]
     },
     {
-        text : '당신에 대해 톨스토이가 묻습니다 2',
+        text : '나에 대해 톨스토이가 묻습니다.',
         pages : [
             {page: 26, choices: ["그렇다.", "아니다."]},
             {page: 27, choices: ["그렇다.", "아니다."]},
@@ -56,7 +56,7 @@ var ANNA_QUESTIONS = [
         ]
     },
     {
-        text : '결혼한 당신에게 톨스토이가 묻습니다 2',
+        text : '삶에 대해 톨스토이가 묻습니다.',
         pages : [
             {page: 32, choices: ["그렇다.", "아니다."]},
             {page: 33, choices: ["있다.", "없다."]},
