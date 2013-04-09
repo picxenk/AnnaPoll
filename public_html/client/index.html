@@ -9,6 +9,7 @@
     <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/lib/anna_data.js"></script>
+    <script src="/lib/chart.js"></script>
     <title> ANNA </title>
 </head>
 <body>
@@ -17,10 +18,21 @@
 
     <!-- ######## SLIDE ######## -->
     <div id="titleSlide" class="slide">
+        2013 대한정신건강박람회<span class="bold"> TBWA와 놀공</span>
+        <br/>
+        <br/>
+        <br/>
         <span id="title">
             톨스토이가</br>
             묻습니다.</br>
         </span>
+    </div>
+
+    <!-- ######## SLIDE ######## -->
+    <div id="title2Slide" class="slide">
+        <h2>톨스토이와 속깊은 소통을 위해</h2>
+        <h2>먼저 간단한 내용을 입력해주세요.</h2>
+        <h2>실명인증은 절대 필요 없습니다.</h2>
     </div>
 
     <!-- ######## SLIDE ######## -->
@@ -31,32 +43,31 @@
         <div id="inputs"> 
             <br/>
             <br/>
-            성별
-            <input type="radio" name="gender" value="m"> 남자
-            <input type="radio" name="gender" value="f"> 여자
+            <span class="bold">성별</span><br/>
+            &nbsp;<input type="radio" name="gender" value="m"> 남자
+            &nbsp;&nbsp;&nbsp;<input type="radio" name="gender" value="f"> 여자
 
             <br/>
             <br/>
-            연령대
-            <input type="radio" name="age" value="10"> 10 대
-            <input type="radio" name="age" value="20"> 20 대
-            <input type="radio" name="age" value="30"> 30 대
-            <input type="radio" name="age" value="40"> 40 대
-            <input type="radio" name="age" value="50"> 50 대
-            <input type="radio" name="age" value="60"> 60 대
+            <span class="bold">연령대</span><br/>
+            &nbsp;<input type="radio" name="age" value="10"> 10 대
+            &nbsp;&nbsp;&nbsp;<input type="radio" name="age" value="20"> 20 대
+            &nbsp;&nbsp;&nbsp;<input type="radio" name="age" value="30"> 30 대
+            &nbsp;&nbsp;&nbsp;<input type="radio" name="age" value="40"> 40 대
+            &nbsp;&nbsp;&nbsp;<input type="radio" name="age" value="50"> 50 대 이상
 
             <br/>
             <br/>
-            결혼 유/무
-            <input type="radio" name="marriage" value="true"> 기혼
-            <input type="radio" name="marriage" value="false"> 미혼 
+            <span class="bold">결혼 유/무</span><br/>
+            &nbsp;<input type="radio" name="marriage" value="true"> 기혼
+            &nbsp;&nbsp;&nbsp;<input type="radio" name="marriage" value="false"> 미혼 
         </div>
     </div>
 
     <!-- ######## SLIDE ######## -->
     <div id="selectionSlide" class="slide">
         <div id="question">
-            한 가지 상황을 선택해주세요.
+            <h3>한 가지 상황을 선택해주세요.</h3>
         </div>
         <div id="subjectInputs">
         </div>
@@ -65,7 +76,7 @@
     <!-- ######## SLIDE ######## -->
     <div id="questionSlide" class="slide">
         <div id="question">
-            책 속으로 들어가 Page <span id="pageNumber">0 </span>을 찾아가세요.
+            <h3>책 속으로 들어가<span class="bold"> Page <span id="pageNumber">0 </span> </span>을 찾아가세요.</h3>
             <p>
             Page. <span id="pageNumber">0</span><br/>
             당신은 어떤 선택을 하시겠습니까?
@@ -73,20 +84,24 @@
         </div>
         <div id="inputs">
             <br/><input type="radio" name="choice" value="1"><span id="questionChoice1">1</span>
+            <br/>
             <br/><input type="radio" name="choice" value="2"><span id="questionChoice2">2</span>
         </div>
     </div>
 
     <!-- ######## SLIDE ######## -->
     <div id="resultSlide" class="slide">
-        <span id="title">
-            결과보기
-        </span>
+        <h2> 결과보기 </h2>
         <p>
-        Page. <span id="pageNumber">0</span>질문에 대답한 사람은 <span id="total">0</span>명입니다.<br/>
-        당신과 같은 선택을 한 사람이 <span id="sameChoice">0</span>명이군요.<br/>
+        Page. <span id="pageNumber">0</span>질문에 대답한 사람은 
+        <span class="bold"><span id="total">0</span>명</span>입니다.<br/>
+        당신과 같은 선택을 한 사람이 
+        <span class="bold"><span id="sameChoice">0</span>명</span>이군요.<br/>
         <br/>
-        그 중에 남자가 <span id="sameChoiceMale">0</span>명, 여자가 <span id="sameChoiceFemale">0</span>명입니다.
+        그 중에 남자가 
+        <span class="bold"><span id="sameChoiceMale">0</span>명</span>
+        , 여자가 
+        <span class="bold"><span id="sameChoiceFemale">0</span>명</span>입니다.
         <br/>
         당신과 같은 대답을 한 사람 중에는
         <span id="sameChoiceAge">0</span>대가 가장 많습니다.
@@ -95,18 +110,41 @@
         <!-- <li>여:<span id="infoResultFemale"></span> -->
         <!-- <br/> -->
         <!-- <span id="infoResult"></span> -->
+        <canvas id="chart" width="200px" height="200px">
     </div>
 
     <!-- ######## SLIDE ######## -->
     <div id="endSlide" class="slide">
-        <span id="title">
-            끝
-        </span>
+        <h3>어려운 선택을 잘 해주셨습니다.</h3>
+        <h3>게임을 종료하시려면 <span class="exit">종료하기</span></h3>
+        <h3>다른 질문에도 답하시려면 <span class="bold">계속하기</span>를 눌러주세요.</h3>
+    </div>
+
+    <!-- ######## SLIDE ######## -->
+    <div id="exitSlide" class="slide">
+        지금까지 소설 &lt;안나 카레니나&gt;를 바탕으로 한 톨스토이의 질문이었습니다.<br/>
+        얼마나 많은 사람들이 나와 같은 생각을 하고 있는지 보셨겠지요.<br/>
+        TBWA 박웅현 ECD와 이 책이 우리에게 시사하는 바를 이야기하는 자리에도<br/>
+        많은 참여 바랍니다.<br/>
+        <br/>
+        언제 : 12일 금요일 오후 5시와 13일 토요일 오후 4시<br/>
+        어디서 : 소강연장에서<br/>
+    </div>
+
+    <!-- ######## SLIDE ######## -->
+    <div id="returnSlide" class="slide">
+        아이패드 반납 장소
+        <img id="returnIpadMap" src="/images/ipad-return.jpg"/>
     </div>
 
     <!-- ######## Buttons ######## -->
-    <button id="nextButton" onclick="nextSlide()">TEST</button>
-    <button id="exitButton" onclick="goTitle()">X</button>
+    <!-- <button id="nextButton" onclick="nextSlide()">TEST</button> -->
+    <!-- <button id="exitButton" onclick="goTitle()">X</button> -->
+    <img id="rGreyButton" class="imgButton" src="/images/r_grey.png" onclick="nextSlide()"/>
+    <img id="lGreyButton" class="imgButton" src="/images/end.png" onclick="exitPoll()"/>
+    <img id="rOrangeButton" class="imgButton" src="/images/continue.png" onclick="continuePoll()"/>
+    <img id="rReturn" class="imgButton" src="/images/return.png" onclick="returnIpad()"/>
+    <img id="flag" src="#"/>
 </div>
 <span id="message"> </span>
 
@@ -120,22 +158,19 @@ var data = {radio:0};
 var message = $('#message');
 
 var TITLE_SLIDE = 1;
-var INFO_SLIDE = 2;
-var SELECT_SLIDE = 3;
-var QUEST_SLIDE = 4;
-var RESULT_SLIDE = 5;
-var END_SLIDE = 6;
+var TITLE2_SLIDE = 2
+var INFO_SLIDE = 3;
+var SELECT_SLIDE = 4;
+var QUEST_SLIDE = 5;
+var RESULT_SLIDE = 6;
+var END_SLIDE = 7;
+var EXIT_SLIDE = 8;
+var RETURN_SLIDE = 9;
 
-var pageNumber = 8;
+var pageNumber = null;
 var infoData = {male:null, female:null, ages:null, marriage:null};
 var infoResult = {male:0, female:0, ages:{}, marriage:{}};
 var choiceResult = {total:null, result:null};
-
-// function update_result() {
-//     radio = $('input:radio[name=radio-choice]:checked').val();
-//     data.radio = radio;
-//     // message.html(radio);
-// }
 
 var currentSubject = null;
 var currentPageIndex = null;
@@ -143,22 +178,83 @@ var currentPageIndex = null;
 function generateSubjectRadio(subjects) {
     var html = '';
     for (var i=1; i<=subjects.length; i++) {
-        html = html + '<br/><input type="radio" name="subject" value="'+i+'"> ' +subjects[i-1].text; 
+        html = html + '<br/><br/><input type="radio" name="subject" value="'+i+'"> ' +subjects[i-1].text; 
     }
     $('#subjectInputs').html(html);
 }
 
+function hideButtons() {
+    $('.imgButton').hide();
+}
+function hideFlag() {
+    $('#flag').hide();
+}
+function showFlag(flagNumber) {
+    var imageFile = '/images/'+flagNumber+'.png';
+    $('#flag').attr('src', imageFile);
+    $('#flag').show();
+}
+
+function exitPoll() {
+    console.log('exit');
+    slideType = EXIT_SLIDE;
+    refreshSlide();
+}
+
+function continuePoll() {
+    console.log('continue');
+    slideType = SELECT_SLIDE;
+    refreshSlide();
+}
+
+function returnIpad() {
+    console.log('return Ipad');
+    slideType = RETURN_SLIDE;
+    refreshSlide();
+}
+
 function refreshSlide() {
     $('.slide').hide();
+    hideButtons();
+    hideFlag();
     if (slideType == TITLE_SLIDE) {
         $('#titleSlide').show();
-        $('#nextButton').html('다음<br/>단계');
+        $('#rGreyButton').show();
     }
-    if (slideType == INFO_SLIDE) $('#infoSlide').show();
-    if (slideType == SELECT_SLIDE) $('#selectionSlide').show();
-    if (slideType == QUEST_SLIDE) $('#questionSlide').show();
-    if (slideType == RESULT_SLIDE) $('#resultSlide').show();
-    if (slideType == END_SLIDE) $('#endSlide').show();
+    if (slideType == TITLE2_SLIDE) {
+        $('#title2Slide').show();
+        $('#rGreyButton').show();
+    }
+    if (slideType == INFO_SLIDE) {
+        $('#infoSlide').show();
+        $('#rGreyButton').show();
+    }
+    if (slideType == SELECT_SLIDE) {
+        $('#selectionSlide').show();
+        $('#rGreyButton').show();
+    }
+    if (slideType == QUEST_SLIDE) {
+        $('#questionSlide').show();
+        $('#rGreyButton').show();
+        showFlag(currentSubject);
+    }
+    if (slideType == RESULT_SLIDE) {
+        $('#resultSlide').show();
+        $('#rGreyButton').show();
+    }
+    if (slideType == END_SLIDE) {
+        $('#endSlide').show();
+        $('#rOrangeButton').show();
+        $('#lGreyButton').show();
+    }
+    if (slideType == EXIT_SLIDE) {
+        $('#exitSlide').show();
+        $('#rReturn').show();
+    }
+
+    if (slideType == RETURN_SLIDE) {
+        $('#returnSlide').show();
+    }
 }
 
 function nextSlide() {
@@ -166,6 +262,9 @@ function nextSlide() {
 
     switch(slideType) {
         case TITLE_SLIDE:
+            slideType = TITLE2_SLIDE;
+            break
+        case TITLE2_SLIDE:
             slideType = INFO_SLIDE;
             break
         case RESULT_SLIDE:
@@ -238,6 +337,8 @@ function preProcessForCurrentSlide(aSlideType) {
         $('span#pageNumber').html(pageNumber);
         $('span#questionChoice1').html(questionChoice1);
         $('span#questionChoice2').html(questionChoice2);
+
+        $('input:radio[name=choice]').prop('checked', false);
     }
 
 }
@@ -286,6 +387,9 @@ $(document).ready(function() {
         $('span#sameChoiceMale').html(maleNumber);
         $('span#sameChoiceFemale').html(femaleNumber);
         $('span#sameChoiceAge').html(0);
+
+        // pie(maleNumber+femaleNumber, choiceResult.total - maleNumber - femaleNumber);
+        // console.log('draw pie!!');
     });
 
     // nextButton.html('next');

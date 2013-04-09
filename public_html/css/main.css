@@ -18,11 +18,15 @@ body {
     font-size: 24px;
 
     color: #444;
-    border: solid;
-    border-width: 10px;
+    /* border: solid; */
+    /* border-width: 10px; */
     /* -webkit-border-radius: 15px; */
     /* -moz-border-radius: 7px; */
     /* border-radius: 15px; */
+}
+
+div#exitSlide {
+    line-height: 35px;
 }
 
 /* button:hover, button:focus { */
@@ -62,6 +66,61 @@ button:focus {
     z-index: 1;
     right: 10%;
     bottom: 10%;
+}
+
+img.imgButton {
+    height: 100px;
+}
+img#rGreyButton {
+    position: absolute;
+    z-index: 6;
+    right: 0%;
+    bottom: 0%;
+}
+img#rOrangeButton{
+    position: absolute;
+    z-index: 7;
+    right: 0%;
+    bottom: 0%;
+}
+img#lGreyButton {
+    position: absolute;
+    z-index: 8;
+    left: 0%;
+    bottom: 0%;
+}
+img#rReturn {
+    position: absolute;
+    z-index: 10;
+    right: 0%;
+    bottom: 0%;
+}
+img#flag {
+    width: 50px;
+    position: absolute;
+    z-index: 9;
+    right: 5%;
+    top: 0%;
+}
+img#returnIpadMap {
+    height : 630px;
+    position: absolute;
+    z-index: 11;
+    right: 5%;
+    top: 0%;
+}
+
+span.bold {
+    color: #FFA438;
+    /* font-size:20px; */
+}
+span.exit {
+    color: #B5B5B5;
+    /* font-size:20px; */
+}
+span#message {
+    color: #999999;
+    font-size:12px;
 }
 
 input {
