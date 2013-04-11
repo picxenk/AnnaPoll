@@ -375,18 +375,15 @@ $(document).ready(function() {
         choiceResult = result;
         $('span#pageNumber').html(pageNumber);
         $('span#total').html(choiceResult.total);
-        $('span#sameChoice').html(choiceResult.result.length);
+        $('span#sameChoice').html(choiceResult.sameChoice);
 
-        var maleNumber = 0;
-        var femaleNumber = 0;
-
-        for (var i=0; i<choiceResult.result.length; i++) {
-            if (choiceResult.result[i].gender == 'm') { maleNumber++; }
-        }
-        femaleNumber = choiceResult.result.length - maleNumber;
-        $('span#sameChoiceMale').html(maleNumber);
-        $('span#sameChoiceFemale').html(femaleNumber);
-        $('span#sameChoiceAge').html(0);
+        // for (var i=0; i<choiceResult.result.length; i++) {
+        //     if (choiceResult.result[i].gender == 'm') { maleNumber++; }
+        // }
+        // femaleNumber = choiceResult.result.length - maleNumber;
+        $('span#sameChoiceMale').html(choiceResult.sameChoiceMale);
+        $('span#sameChoiceFemale').html(choiceResult.sameChoiceFemale);
+        $('span#sameChoiceAge').html(choiceResult.ages);
 
         // pie(maleNumber+femaleNumber, choiceResult.total - maleNumber - femaleNumber);
         // console.log('draw pie!!');
