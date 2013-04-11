@@ -103,14 +103,19 @@
         , 여자가 
         <span class="bold"><span id="sameChoiceFemale">0</span>명</span>입니다.
         <br/>
+        <br/>
         당신과 같은 대답을 한 사람 중에는
-        <span id="sameChoiceAge">0</span>대가 가장 많습니다.
+        <span id="sameChoiceAge"><span class="bold">0대</span>가</span> 가장 많습니다.
         </p>
         <!-- <li>남:<span id="infoResultMale"></span> -->
         <!-- <li>여:<span id="infoResultFemale"></span> -->
         <!-- <br/> -->
         <!-- <span id="infoResult"></span> -->
-        <canvas id="chart" width="200px" height="200px">
+        <canvas id="pieChart" width="200px" height="200px"></canvas>
+        <canvas id="barChart" width="200px" height="150px"></canvas>
+        <span id="pieTotal">총 0명</span>
+        <span id="pieSame">0</span>
+        <span id="pieGender">남 : 0 <br/>여 : 0</span>
     </div>
 
     <!-- ######## SLIDE ######## -->
@@ -353,6 +358,19 @@ function log(msg) {
     message.html(msg);
 }
 
+function getMaxKey(obj) {
+    var max = 0;
+    var maxKey = null;
+
+    for (key in obj) {
+        if (max < obj[key]) {
+            max = obj[key];
+            maxKey = key;
+        }
+    }
+    return maxKey;
+}
+
 $(document).ready(function() {
 
     refreshSlide();
@@ -361,11 +379,9 @@ $(document).ready(function() {
     socket = io.connect("ws://"+window.location.host);
     log('hi all');
     socket.on('connect', function() {
-        // message.html(window.location.host+'에 연결되었습니다.');
         log(window.location.host+'에 연결되었습니다.');
     });
     socket.on('disconnect', function() {
-        // message.html('서버로의 연결이 끊어졌습니다. 다시 접속해보세요.');
         log('서버로의 연결이 끊어졌습니다. 다시 접속해보세요.');
     });
     socket.on('info_result', function(result) {
@@ -376,16 +392,22 @@ $(document).ready(function() {
         $('span#pageNumber').html(pageNumber);
         $('span#total').html(choiceResult.total);
         $('span#sameChoice').html(choiceResult.sameChoice);
-
-        // for (var i=0; i<choiceResult.result.length; i++) {
-        //     if (choiceResult.result[i].gender == 'm') { maleNumber++; }
-        // }
-        // femaleNumber = choiceResult.result.length - maleNumber;
         $('span#sameChoiceMale').html(choiceResult.sameChoiceMale);
         $('span#sameChoiceFemale').html(choiceResult.sameChoiceFemale);
-        $('span#sameChoiceAge').html(choiceResult.ages);
+        // console.log(choiceResult.ages);
 
-        // pie(maleNumber+femaleNumber, choiceResult.total - maleNumber - femaleNumber);
+        pie([choiceResult.sameChoice, choiceResult.total-choiceResult.sameChoice]);
+        $('span#pieTotal').html('총 '+choiceResult.total+'명');
+        $('span#pieSame').html(choiceResult.sameChoice);
+        $('span#pieGender').html('남 : '+choiceResult.sameChoiceMale+'<br/>여 : '+choiceResult.sameChoiceFemale);
+
+        var maxKey = getMaxKey(choiceResult.ages);
+        if (maxKey == '50') {
+            $('span#sameChoiceAge').html('<span class="bold">'+maxKey+'대 이상</span>이');
+        } else {
+            $('span#sameChoiceAge').html('<span class="bold">'+maxKey+'대</span>가');
+        }
+        bar(choiceResult.ages, maxKey);
         // console.log('draw pie!!');
     });
 
