@@ -18,9 +18,11 @@ var http = require('http');
 var io = require('socket.io');
 var fs = require('fs');
 var static = require('node-static');
+var Tiny = require('tiny');
 
 /** DATA **/
 var clients = {};
+var db;
 
 var poll_result = {
     male : 0,
