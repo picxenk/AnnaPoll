@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1 user-scalable=no">
+    <link rel="stylesheet" href="/css/main.css" />
+    <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/lib/anna_data.js"></script>
+    <script src="/lib/chart.js"></script>
+    <title> ANNA Result </title>
+</head>
+<body>
+<!-- <canvas id="sketch" data-processing-sources="/lib/AnnaPollClient.java"></canvas> -->
+<div id="main">
+
+    <!-- ######## SLIDE ######## -->
+    <div id="resultSlide" class="slide">
+        <h2> 결과보기 </h2>
+        <p>
+        Page. 
+        <select name="page" id="page"> 
+            <option value="1">1</option>
+        </select>질문에 대답한 사람은 
+        <span class="bold"><span id="total">0</span>명</span>입니다.<br/>
+
+        <select name="choice" id="choice">
+            <option value="1">1</option>
+            <option value="2">2</option>
+        </select>
+        선택을 한 사람이 
+        <span class="bold"><span id="sameChoice">0</span>명</span>이군요.<br/>
+        <br/>
+        그 중에 남자가 
+        <span class="bold"><span id="sameChoiceMale">0</span>명</span>
+        , 여자가 
+        <span class="bold"><span id="sameChoiceFemale">0</span>명</span>입니다.
+        <br/>
+        <br/>
+        같은 대답을 한 사람 중에는
+        <span id="sameChoiceAge"><span class="bold">0대</span>가</span> 가장 많습니다.
+        </p>
+        <!-- <li>남:<span id="infoResultMale"></span> -->
+        <!-- <li>여:<span id="infoResultFemale"></span> -->
+        <!-- <br/> -->
+        <!-- <span id="infoResult"></span> -->
+        <canvas id="pieChart" width="200px" height="200px"></canvas>
+        <canvas id="barChart" width="200px" height="150px"></canvas>
+        <span id="pieTotal">총 0명</span>
+        <span id="pieSame">0</span>
+        <span id="pieGender">남 : 0 <br/>여 : 0</span>
+    </div>
+
+</div>
+<span id="message"> </span>
+
+<script>
+var socket = null;
+var voting_interval = 2000;
+var slideType = 1;
+var radio;
+var data = {radio:0};
+
+var message = $('#message');
+
+var TITLE_SLIDE = 1;
+var TITLE2_SLIDE = 2
+var INFO_SLIDE = 3;
+var SELECT_SLIDE = 4;
+var QUEST_SLIDE = 5;
+var RESULT_SLIDE = 6;
+var END_SLIDE = 7;
+var EXIT_SLIDE = 8;
+var RETURN_SLIDE = 9;
+
+var pageNumber = null;
+var choiceNumber = null;
+
+var infoData = {male:null, female:null, ages:null, marriage:null};
+var infoResult = {male:0, female:0, ages:{}, marriage:{}};
+var choiceResult = {total:null, result:null};
+
+var currentSubject = null;
+var currentPageIndex = null;
+
+function refreshSlide() {
+    // $('.slide').hide();
+    if (slideType == RESULT_SLIDE) {
+        $('#resultSlide').show();
+        $('#rGreyButton').show();
+    }
+}
+
+function postProcessForCurrentSlide(aSlideType) {
+
+    if (aSlideType == QUEST_SLIDE) {
+        var choiceData = {
+            page : parseInt(pageNumber),
+            choice : $('input:radio[name=choice]:checked').val(),
+            gender : infoData.gender,
+            age : infoData.age,
+            marriage : infoData.marriage,
+        };
+        socket.emit('add_choice', choiceData);
+        socket.emit('show_choice_result', choiceData);
+    }
+}
+
+function preProcessForCurrentSlide(aSlideType) {
+    if (aSlideType == QUEST_SLIDE) {
+
+        if (currentSubject == null) return;
+        if (currentSubject && currentPageIndex == null) currentPageIndex = 0;
+
+        var questionChoice1 = ANNA_QUESTIONS[currentSubject-1].pages[currentPageIndex].choices[0];
+        var questionChoice2 = ANNA_QUESTIONS[currentSubject-1].pages[currentPageIndex].choices[1];
+        pageNumber = ANNA_QUESTIONS[currentSubject-1].pages[currentPageIndex].page;
+        
+        $('span#pageNumber').html(pageNumber);
+        $('span#questionChoice1').html(questionChoice1);
+        $('span#questionChoice2').html(questionChoice2);
+
+        $('input:radio[name=choice]').prop('checked', false);
+
+        var subText = ANNA_QUESTIONS[currentSubject-1].subtext;
+        if (subText) { 
+            $('span#subtext').html(subText);
+            if (currentSubject == 1) $('span#subtext').css('color', '#ED1C24');
+            if (currentSubject == 2) $('span#subtext').css('color', '#F7941E');
+        }
+    }
+
+}
+
+function log(msg) {
+    console.log(msg);
+    //message.html(msg);
+}
+
+function getMaxKey(obj) {
+    var max = 0;
+    var maxKey = null;
+
+    for (key in obj) {
+        if (max < obj[key]) {
+            max = obj[key];
+            maxKey = key;
+        }
+    }
+    return maxKey;
+}
+
+function buildPageSelection(aTarget, aMaxPage) {
+    $(aTarget).empty();
+    var options = [];
+    for (var i=1; i<=aMaxPage; i++) {
+        var optionHTML = '<option value="'+i+'">'+i+'</option>';
+        options.push(optionHTML);
+    }
+    $(aTarget).append(options.join(' '));
+}
+
+$(document).ready(function() {
+
+    refreshSlide();
+
+
+
+    buildPageSelection('#page', 37);
+    socket = io.connect("ws://"+window.location.host);
+    log('hi all');
+    socket.on('connect', function() {
+        log(window.location.host+'에 연결되었습니다.');
+    });
+    socket.on('disconnect', function() {
+        log('서버로의 연결이 끊어졌습니다. 다시 접속해보세요.');
+    });
+    socket.on('info_result', function(result) {
+        infoResult = result;
+    });
+    socket.on('choice_result', function(result) {
+        choiceResult = result;
+        $('span#pageNumber').html(pageNumber);
+        $('span#total').html(choiceResult.total);
+        $('span#sameChoice').html(choiceResult.sameChoice);
+        $('span#sameChoiceMale').html(choiceResult.sameChoiceMale);
+        $('span#sameChoiceFemale').html(choiceResult.sameChoiceFemale);
+        console.log(choiceResult);
+
+        pie([choiceResult.sameChoice, choiceResult.total-choiceResult.sameChoice]);
+        $('span#pieTotal').html('총 '+choiceResult.total+'명');
+        $('span#pieSame').html(choiceResult.sameChoice);
+        $('span#pieGender').html('남 : '+choiceResult.sameChoiceMale+'<br/>여 : '+choiceResult.sameChoiceFemale);
+
+        var maxKey = getMaxKey(choiceResult.ages);
+        if (maxKey == '50') {
+            $('span#sameChoiceAge').html('<span class="bold">'+maxKey+'대 이상</span>이');
+        } else {
+            $('span#sameChoiceAge').html('<span class="bold">'+maxKey+'대</span>가');
+        }
+        bar(choiceResult.ages, maxKey);
+        // console.log('draw pie!!');
+    });
+
+    var showChoiceResult = function(aPage, aChoice) {
+        var choiceData = {
+            page : parseInt(aPage),
+            choice : aChoice,
+        };
+        socket.emit('show_choice_result', choiceData);
+    }
+
+    $('#page').change(function() {
+        pageNumber = $('#page option:selected').val();
+        choiceNumber = $('#choice option:selected').val();
+        console.log(pageNumber + '-' + choiceNumber);
+        showChoiceResult(pageNumber, choiceNumber);
+    });
+
+    $('#choice').change(function() {
+        pageNumber = $('#page option:selected').val();
+        choiceNumber = $('#choice option:selected').val();
+        console.log(pageNumber + '-' + choiceNumber);
+        showChoiceResult(pageNumber, choiceNumber);
+    });
+
+
+
+});
+</script>
+</body>
+</html>
