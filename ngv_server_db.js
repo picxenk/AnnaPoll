@@ -90,7 +90,7 @@ var objectCount = function(object) {
 
 /** MAIN **/
 ngv_voting = function(con) {
-    ngv_client_logger(con, 'connected ' + clients.length);
+    ngv_client_logger(con, 'connected ');
     con.on('close', do_nothing);
     con.on('vote', function(vote) {
         ngv_client_logger(con, vote);
@@ -107,7 +107,61 @@ ngv_voting = function(con) {
     con.on('add_choice', function(data) {
         votes.save(null, data, function(err, key) {
             if (err) ngv_client_logger(con, 'error in add_choice: ' + err);
-            votes.find({page: data.page}, function(err, results) {
+            // votes.find({page: data.page}, function(err, results) { // {{{
+
+            //     if (err) { 
+            //         ngv_client_logger(con, 'error in find votes ' + err);
+            //         return;
+            //     } else {
+            //         var totalNumberForPage = objectCount(results);
+            //         var sameChoiceNumber = 0;
+            //         var sameChoiceMaleNumber = 0;
+            //         var sameChoiceFemaleNumber = 0;
+            //         var age10 = 0;
+            //         var age20 = 0;
+            //         var age30 = 0;
+            //         var age40 = 0;
+            //         var age50 = 0;
+
+            //         for (key in results) {
+            //             if (results[key].choice == data.choice) {
+            //                 sameChoiceNumber++;
+
+            //                 if (results[key].gender == 'm') {
+            //                     sameChoiceMaleNumber++;
+            //                 }
+
+            //                 if (results[key].age == '10') age10++;
+            //                 if (results[key].age == '20') age20++;
+            //                 if (results[key].age == '30') age30++;
+            //                 if (results[key].age == '40') age40++;
+            //                 if (results[key].age == '50') age50++;
+            //             }
+            //             
+            //         }
+
+            //         var choiceResultData = {
+            //             total: totalNumberForPage,
+            //             sameChoice: sameChoiceNumber,
+            //             sameChoiceMale: sameChoiceMaleNumber,
+            //             sameChoiceFemale: sameChoiceNumber - sameChoiceMaleNumber,
+            //             ages: {
+            //                 10: age10,
+            //                 20: age20,
+            //                 30: age30,
+            //                 40: age40,
+            //                 50: age50,
+            //             },
+            //         };
+            //         con.emit('choice_result', choiceResultData);
+            //         ngv_client_logger(con, 'total: ' + totalNumberForPage + ' for page: ' + data.page);
+            //     }
+            // }); //vote_find end }}}
+        }); //vote_save end
+    });
+
+    con.on('show_choice_result', function(data) {
+            votes.find({page: data.page}, function(err, results) { // {{{
 
                 if (err) { 
                     ngv_client_logger(con, 'error in find votes ' + err);
@@ -156,8 +210,7 @@ ngv_voting = function(con) {
                     con.emit('choice_result', choiceResultData);
                     ngv_client_logger(con, 'total: ' + totalNumberForPage + ' for page: ' + data.page);
                 }
-            });
-        });
+            }); //vote_find end }}}
     });
 
     con.on('save_anna_result', function() {

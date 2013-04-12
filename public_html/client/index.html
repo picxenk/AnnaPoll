@@ -121,7 +121,7 @@
     <!-- ######## SLIDE ######## -->
     <div id="endSlide" class="slide">
         <h3>어려운 선택을 잘 해주셨습니다.</h3>
-        <h3>게임을 종료하시려면 <span class="exit">종료하기</span></h3>
+        <h3>설문을 종료하시려면 <span class="exit">종료하기</span></h3>
         <h3>다른 질문에도 답하시려면 <span class="bold">계속하기</span>를 눌러주세요.</h3>
     </div>
 
@@ -321,7 +321,7 @@ function postProcessForCurrentSlide(aSlideType) {
             marriage : infoData.marriage,
         };
         socket.emit('add_choice', choiceData);
-        // socket.emit('show_choice_result', {page: pageNumber, myChoice: choiceData.choice});
+        socket.emit('show_choice_result', choiceData);
 
         // $("#infoResultMale").html(infoResult.male);
         // $("#infoResultFemale").html(infoResult.female);
