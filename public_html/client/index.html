@@ -76,6 +76,7 @@
     <!-- ######## SLIDE ######## -->
     <div id="questionSlide" class="slide">
         <div id="question">
+            <span id="subtext"> </span>
             <h3>책 속으로 들어가<span class="bold"> Page <span id="pageNumber">0 </span> </span>을 찾아가세요.</h3>
             <p>
             Page. <span id="pageNumber">0</span><br/>
@@ -344,6 +345,13 @@ function preProcessForCurrentSlide(aSlideType) {
         $('span#questionChoice2').html(questionChoice2);
 
         $('input:radio[name=choice]').prop('checked', false);
+
+        var subText = ANNA_QUESTIONS[currentSubject-1].subtext;
+        if (subText) { 
+            $('span#subtext').html(subText);
+            if (currentSubject == 1) $('span#subtext').css('color', '#ED1C24');
+            if (currentSubject == 2) $('span#subtext').css('color', '#F7941E');
+        }
     }
 
 }

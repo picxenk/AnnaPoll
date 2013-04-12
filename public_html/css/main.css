@@ -156,6 +156,9 @@ span#message {
     color: #999999;
     font-size:12px;
 }
+span#subtext {
+    font-size: 14px;
+}
 
 input {
     border: 3px solid #444;

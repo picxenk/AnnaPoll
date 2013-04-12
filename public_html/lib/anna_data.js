@@ -1,6 +1,7 @@
 var ANNA_QUESTIONS = [
     {
         text : '결혼한 당신에게 톨스토이가 묻습니다 1',
+        subtext : '당신은 능력있는 남편/아름다운 아내와 별 문제 없이 잘 살고 있는, 능력있는 유부녀/유부남입니다.',
         pages : [
             {page: 1, choices: ["신경쓴다.", "신경쓰지 않는다."]},
             {page: 2, choices: ["가볍게 웃는다.", "시선을 피한다."]},
@@ -13,6 +14,7 @@ var ANNA_QUESTIONS = [
     },
     {
         text : '결혼한 당신에게 톨스토이가 묻습니다 2',
+        subtext : '당신은 어린 자녀를 둔 기혼자로, 세상의 존경을 받으며 풍요로운 삶을 살고 있습니다.',
         pages : [
             {page: 8, choices: ["사태를 관망한다.", "배우자에게 진실을 추긍한다."]},
             {page: 9, choices: ["사태를 관망한다.", "배우자에게 진실을 추긍한다."]},
@@ -24,6 +26,7 @@ var ANNA_QUESTIONS = [
     },
     {
         text : '결혼과 사랑에 대해 톨스토이가 묻습니다.',
+        subtext : '',
         pages : [
             {page: 14, choices: ["그렇다.", "아니다."]},
             {page: 15, choices: ["그렇다.", "아니다."]},
@@ -36,6 +39,7 @@ var ANNA_QUESTIONS = [
     },
     {
         text : '관계에 대해 톨스토이가 묻습니다.',
+        subtext : '',
         pages : [
             {page: 21, choices: ["있다.", "없다."]},
             {page: 22, choices: ["있다.", "없다."]},
@@ -46,6 +50,7 @@ var ANNA_QUESTIONS = [
     },
     {
         text : '나에 대해 톨스토이가 묻습니다.',
+        subtext : '',
         pages : [
             {page: 26, choices: ["그렇다.", "아니다."]},
             {page: 27, choices: ["그렇다.", "아니다."]},
@@ -57,6 +62,7 @@ var ANNA_QUESTIONS = [
     },
     {
         text : '삶에 대해 톨스토이가 묻습니다.',
+        subtext : '',
         pages : [
             {page: 32, choices: ["그렇다.", "아니다."]},
             {page: 33, choices: ["있다.", "없다."]},
